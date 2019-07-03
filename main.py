@@ -5,6 +5,11 @@ import matplotlib.pyplot as plt
 import time
 import random
 
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.spatial import distance
+
 
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
@@ -16,6 +21,26 @@ optimal_cycle = []
 current_cycle = []
 visited_nodes = 0
 random_start_node = 0
+
+
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+#  From coord to adjacency matrix
+# ------------------
+def coord_to_matrix(coord):
+    num_nodes = coord.shape[0]
+    dist_mat = np.zeros((num_nodes, num_nodes))
+    for _ in range(0, num_nodes):
+        for i in range(_ + 1, num_nodes):
+            a = (coord[_][0], coord[_][1])
+            b = (coord[i][0], coord[i][1])
+            dist_mat[_][i] = int(distance.euclidean(a, b))
+
+    dist_mat += dist_mat.T
+
+    return dist_mat
+
+
 
 
 # ------------------------------------------------------------------------------------------
@@ -224,9 +249,30 @@ def random_other_than(alist, top):
 
 
 # --------------------------------------------------------------------------------------
-# --------
-#
-# --------
+# Two-opt
+def cost_change(cost_mat, n1, n2, n3, n4):
+    return cost_mat[n1][n3] + cost_mat[n2][n4] - cost_mat[n1][n2] - cost_mat[n3][n4]
+
+
+def heuristic_two_opt(route, cost_mat):
+    best = route
+    cost = 0
+    improved = True
+    while improved:
+        improved = False
+        for i in range(1, len(route) - 2):
+            for j in range(i + 1, len(route)):
+                if j - i == 1: continue
+                if cost_change(cost_mat, best[i - 1], best[i], best[j - 1], best[j]) < 0:
+                    best[i:j] = best[j - 1:i - 1:-1]
+                    improved = True
+        route = best
+    for _ in range(0, len(best) - 1):
+        cost += cost_mat[best[_]][best[_ + 1]]
+
+    return best, cost
+
+
 
 # --------------------------------------------------------------------------------------
 # --------
