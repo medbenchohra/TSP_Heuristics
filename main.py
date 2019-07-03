@@ -8,20 +8,21 @@ import random
 
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
-# Needed variables
-# ----------------
+#  Needed variables
+# ------------------
+
 estimated_cycle = [0]
 optimal_cycle = []
 current_cycle = []
 visited_nodes = 0
-starting_node = 0
+random_start_node = 0
 
 
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
-# Visuals
-# -------
+#  Visuals
+# ---------
 
 def update_cycle_node_list_by_labels_name(a_list):
     for i in range(1, len(a_list)):
@@ -57,8 +58,8 @@ def draw_graph(g, cycle, nt):
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
-# Helpers
-# -------
+#  Helpers
+# ---------
 
 def read_graphs(g1, g2):
     nodes = int(input("\n\n\nNumber of nodes : "))
@@ -101,8 +102,8 @@ def initialize_graphs(g1, g2):
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
-# Bruteforce
-# ----------
+#  Bruteforce
+# ------------
 
 def add_to_min(g, current_conf, ideal_conf):
     nbr_nodes = g.number_of_nodes()
@@ -138,13 +139,13 @@ def bruteforce(g, i):
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
-# Heuristics
-# ----------
+#  Heuristics
+# ------------
 
 # --------------------------------------------------------------------------------------
-# ----------------------
-# 1 - Nearest Neighboor
-# ----------------------
+# -------------------
+#  Nearest Neighboor
+# -------------------
 
 def heuristic_nearest_neighboor(g, i):
     global estimated_cycle
@@ -180,9 +181,9 @@ def min_adj_cost(g, node):
 
 
 # --------------------------------------------------------------------------------------
-# ---------------------
-# 2 - Random Selection
-# ---------------------
+# ------------------
+#  Random Selection
+# ------------------
 
 def heuristic_random_selection(g):
     global estimated_cycle
@@ -198,9 +199,9 @@ def heuristic_random_selection(g):
 
 
 # --------------------------------------------------------------------------------------
-# ----------------
-# 3 - Random Walk
-# ----------------
+# -------------
+#  Random Walk
+# -------------
 
 def heuristic_random_walk(g, i):
     global estimated_cycle
@@ -222,94 +223,57 @@ def random_other_than(alist, top):
     return n
 
 
+# --------------------------------------------------------------------------------------
+# --------
+#
+# --------
 
 # --------------------------------------------------------------------------------------
-# -----------
-# 4 - Greedy
-# -----------
-
-def heuristic_greedy(g):
-    sg = create_graph(nxo)
-
-    list_edges = sorted(g.edges(data=True), key=lambda x: x[2]['weight'])
-
-    # print(list_edges)
-
-    start_node = list_edges[0][0]
-
-    for i in range(len(list_edges)):
-        u = list_edges[i][0]
-        v = list_edges[i][1]
-        w = list_edges[i][2]['weight']
-
-        sg.add_edge(u, v, weight=w)
-
-        if sg.degree(u) <= 2 and sg.degree(v) <= 2:
-            try:
-                nxo.find_cycle(g, start_node, 'ignore')
-            except nxo.exception.NetworkXNoCycle:
-                continue
-
-    #   MODEL
-    # print(list_edges)
-    # print(list_edges[i])
-    # print(list_edges[i][2]) --- dict
-    # print(list_edges[i][2]['weight'])
-    # list_a = [list_edges]
-    #
-    # print(list_edges[i][0]) ----- u
-    # print(list_edges[i][1]) ----- v
-
-
-
-
-
-# --------------------------------------------------------------------------------------
-# -----------
-# 4 - Greedy
-# -----------
+# --------
+#
+# --------
 
 
 
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------
-# Main Program
-# -------------
+#  Main Program
+# --------------
 
 main_graph_bruteforce = create_graph(nx)
 main_graph_heuristic = create_graph(nx2)
 # read_graphs(main_graph_bruteforce, main_graph_heuristic)
 initialize_graphs(main_graph_bruteforce, main_graph_heuristic)
 initialize_variables()
-starting_node = random.randrange(main_graph_bruteforce.number_of_nodes())
+random_start_node = random.randrange(main_graph_bruteforce.number_of_nodes())
 
 
-    # ---------------
-    # Exact execution
-    # ---------------
+    # -----------------
+    #  Exact execution
+    # -----------------
 time_begin_bruteforce = time.process_time()
 bruteforce(main_graph_bruteforce, 0)
 time_end_bruteforce = time.process_time()
 time_bruteforce = round(time_end_bruteforce - time_begin_bruteforce, 6)
 
 
-    # -------------------
-    # Heuristic execution
-    # -------------------
+    # ---------------------
+    #  Heuristic execution
+    # ---------------------
 time_begin_heuristic = time.process_time()  # Starting timer
 
-heuristic_nearest_neighboor(main_graph_heuristic, starting_node)
+heuristic_nearest_neighboor(main_graph_heuristic, random_start_node)
 # heuristic_random_selection(main_graph_heuristic)
-# heuristic_random_walk(main_graph_heuristic, starting_node)
+# heuristic_random_walk(main_graph_heuristic, random_start_node)
 
 time_end_heuristic = time.process_time()  # Stopping timer
 time_heuristic = round(time_end_heuristic - time_begin_heuristic, 6)
 
 
-    # ----------------
-    # Printing results
-    # ----------------
+    # ------------------
+    #  Printing results
+    # ------------------
 draw_graph(main_graph_bruteforce, optimal_cycle, nx)
 draw_graph(main_graph_heuristic, estimated_cycle, nx2)
 
@@ -324,7 +288,6 @@ print("Time : " + repr(round(1000*time_heuristic, 1)) + " ms")
 print("\n\n - Estimation is " + str(round(estimated_cycle[0]/optimal_cycle[0], 1))
       + " further from optimal\n\n")
 
-heuristic_greedy(main_graph_bruteforce)
 
 
 # ---------------------------------------------------------------------------------------
