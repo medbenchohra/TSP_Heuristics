@@ -292,7 +292,8 @@ def heuristic_two_opt(route, cost_mat):
 
 
 class City:
-    def __init__(self, x, y):
+    def __init__(self, node, x, y):
+        self.node = node
         self.x = x
         self.y = y
 
@@ -303,7 +304,7 @@ class City:
         return distance
 
     def __repr__(self):
-        return "(" + str(self.x) + "," + str(self.y) + ")"
+        return str(self.node)
 
 #----------------------------------------------------------------------------------------
 
