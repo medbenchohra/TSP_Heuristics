@@ -11,14 +11,13 @@ import random
 #  Needed variables
 # ------------------
 
-estimated_cycle = [0]
-optimal_cycle = []
-current_cycle = []
-visited_nodes = 0
-random_start_node = 0
+# estimated_cycle = [0]
+# optimal_cycle = []
+# current_cycle = []
+
+# random_start_node = 0
 
 
-# ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 #  Visuals
@@ -57,7 +56,6 @@ def draw_graph(g, cycle, nt):
 
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------
 #  Helpers
 # ---------
 
@@ -74,16 +72,16 @@ def read_graphs(g1, g2):
             g2.add_edge(i, k, color='#ECEAE1', weight=weight)
 
 
-def initialize_variables():
-    global estimated_cycle
-    global current_cycle
-    global optimal_cycle
-    global visited_nodes
-
-    estimated_cycle = [0]
-    current_cycle = [0]
-    optimal_cycle = [0]
-    visited_nodes = 0
+# def initialize_variables():
+#     global estimated_cycle
+#     global current_cycle
+#     global optimal_cycle
+#     global visited_nodes
+#
+#     estimated_cycle = [0]
+#     current_cycle = [0]
+#     optimal_cycle = [0]
+#     visited_nodes = 0
 
 
 def initialize_graphs(g1, g2):
@@ -101,11 +99,45 @@ def initialize_graphs(g1, g2):
 
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------
 #  Bruteforce
 # ------------
 
+def bruteforce(g, i):
+
+    visited_nodes = 0
+
+    def recursive_bruteforce(g, i):
+        global visited_nodes
+        visited_nodes = visited_nodes + 1
+        current_cycle.append(i)
+        for k in range(g.number_of_nodes()):
+            if g.has_edge(i, k) and (current_cycle.count(k) == 0 or (current_cycle.count(k) == 1 and current_cycle[0] == k)):
+                current_cycle[0] = current_cycle[0] + g[i][k]['weight']
+                recursive_bruteforce(g, k)
+                add_to_min(g, current_cycle, optimal_cycle)
+                current_cycle.pop()
+                current_cycle[0] = current_cycle[0] - g[i][k]['weight']
+                visited_nodes = visited_nodes - 1
+
+
+    visited_nodes = 0
+    current_cycle = [0]
+    optimal_cycle = [0]
+
+    time_begin = time.process_time()
+    recursive_bruteforce(g, i)
+    time_end = time.process_time()
+    time_exec = round(time_end - time_begin, 6)
+
+    cost = current_cycle[0]
+    cycle = current_cycle
+    cycle.pop(0)
+
+    return cycle, cost, time_exec
+
+
 def add_to_min(g, current_conf, ideal_conf):
+
     nbr_nodes = g.number_of_nodes()
     if len(current_conf) == nbr_nodes + 1:
         last_edge_weight = g[current_conf[len(current_conf)-1]][current_conf[1]]['weight']
@@ -120,23 +152,7 @@ def add_to_min(g, current_conf, ideal_conf):
 
 
 
-def bruteforce(g, i):
-    global visited_nodes
-    global current_cycle
 
-    visited_nodes = visited_nodes + 1
-    current_cycle.append(i)
-    for k in range(g.number_of_nodes()):
-        if g.has_edge(i, k) and (current_cycle.count(k) == 0 or (current_cycle.count(k) == 1 and current_cycle[0] == k)):
-            current_cycle[0] = current_cycle[0]+g[i][k]['weight']
-            bruteforce(g, k)
-            add_to_min(g, current_cycle, optimal_cycle)
-            current_cycle.pop()
-            current_cycle[0] = current_cycle[0] - g[i][k]['weight']
-            visited_nodes = visited_nodes - 1
-
-
-# ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 #  Heuristics
@@ -148,13 +164,28 @@ def bruteforce(g, i):
 # -------------------
 
 def heuristic_nearest_neighboor(g, i):
-    global estimated_cycle
-    estimated_cycle.append(i)
-    if len(estimated_cycle) == g.number_of_nodes() + 1:
-        estimated_cycle[0] = estimated_cycle[0] + g[estimated_cycle[1]][i]['weight']
-        return
-    estimated_cycle[0] = estimated_cycle[0] + min_adj_cost(g, i)[0]
-    heuristic_nearest_neighboor(g, min_adj_cost(g, i)[1])
+
+    estimated_cycle = []
+
+    def recursive_nearest_neighboor(g, i):
+        estimated_cycle.append(i)
+        if len(estimated_cycle) == g.number_of_nodes() + 1:
+            estimated_cycle[0] = estimated_cycle[0] + g[estimated_cycle[1]][i]['weight']
+            return
+        estimated_cycle[0] = estimated_cycle[0] + min_adj_cost(g, i)[0]
+        heuristic_nearest_neighboor(g, min_adj_cost(g, i)[1])
+
+
+    time_begin = time.process_time()
+    recursive_nearest_neighboor(g, i)
+    time_end = time.process_time()
+    time_exec = round(time_end - time_begin, 6)
+
+    cost = estimated_cycle[0]
+    estimated_cycle.pop(0)
+
+    return estimated_cycle, cost, time_exec
+
 
 def min_adj_cost(g, node):
     adj_weights = []
@@ -177,7 +208,6 @@ def min_adj_cost(g, node):
     min_cost = min(adj_weights)
 
     return min_cost, min_cost_node
-
 
 
 # --------------------------------------------------------------------------------------
@@ -224,9 +254,13 @@ def random_other_than(alist, top):
 
 
 # --------------------------------------------------------------------------------------
-# --------
-#
-# --------
+# --------------
+#  Christofides
+# --------------
+
+def heuristic_christofides(G):
+    T = nxo.minimum_spanning_tree(G)
+    return T
 
 # --------------------------------------------------------------------------------------
 # --------
@@ -245,48 +279,57 @@ main_graph_bruteforce = create_graph(nx)
 main_graph_heuristic = create_graph(nx2)
 # read_graphs(main_graph_bruteforce, main_graph_heuristic)
 initialize_graphs(main_graph_bruteforce, main_graph_heuristic)
-initialize_variables()
+# initialize_variables()
 random_start_node = random.randrange(main_graph_bruteforce.number_of_nodes())
+
 
 
     # -----------------
     #  Exact execution
     # -----------------
+
 time_begin_bruteforce = time.process_time()
+
 bruteforce(main_graph_bruteforce, 0)
+
 time_end_bruteforce = time.process_time()
 time_bruteforce = round(time_end_bruteforce - time_begin_bruteforce, 6)
+
 
 
     # ---------------------
     #  Heuristic execution
     # ---------------------
-time_begin_heuristic = time.process_time()  # Starting timer
 
-heuristic_nearest_neighboor(main_graph_heuristic, random_start_node)
+time_begin_heuristic = time.process_time()
+
+# heuristic_nearest_neighboor(main_graph_heuristic, random_start_node)
 # heuristic_random_selection(main_graph_heuristic)
 # heuristic_random_walk(main_graph_heuristic, random_start_node)
 
-time_end_heuristic = time.process_time()  # Stopping timer
+time_end_heuristic = time.process_time()
 time_heuristic = round(time_end_heuristic - time_begin_heuristic, 6)
 
 
     # ------------------
     #  Printing results
     # ------------------
-draw_graph(main_graph_bruteforce, optimal_cycle, nx)
-draw_graph(main_graph_heuristic, estimated_cycle, nx2)
 
-print("\n\nOptimal Cycle : " + str(update_cycle_node_list_by_labels_name(optimal_cycle)[1:]))
-print("Cost : " + str(optimal_cycle[0]))
-print("Time : " + str(round(1000*time_bruteforce, 1)) + " ms")
+draw_graph(heuristic_christofides(main_graph_bruteforce), optimal_cycle, nx)
 
-print("\n\nEstimated Cycle : " + str(update_cycle_node_list_by_labels_name(estimated_cycle)[1:]))
-print("Cost : " + str(estimated_cycle[0]))
-print("Time : " + repr(round(1000*time_heuristic, 1)) + " ms")
+# draw_graph(main_graph_bruteforce, optimal_cycle, nx)
+# draw_graph(main_graph_heuristic, estimated_cycle, nx2)
 
-print("\n\n - Estimation is " + str(round(estimated_cycle[0]/optimal_cycle[0], 1))
-      + " further from optimal\n\n")
+# print("\n\nOptimal Cycle : " + str(update_cycle_node_list_by_labels_name(optimal_cycle)[1:]))
+# print("Cost : " + str(optimal_cycle[0]))
+# print("Time : " + str(round(1000*time_bruteforce, 1)) + " ms")
+#
+# print("\n\nEstimated Cycle : " + str(update_cycle_node_list_by_labels_name(estimated_cycle)[1:]))
+# print("Cost : " + str(estimated_cycle[0]))
+# print("Time : " + repr(round(1000*time_heuristic, 1)) + " ms")
+#
+# print("\n\n - Estimation is " + str(round(estimated_cycle[0]/optimal_cycle[0], 1))
+#       + " further from optimal\n\n")
 
 
 
