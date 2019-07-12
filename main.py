@@ -18,7 +18,7 @@ from pytsp import christofides_tsp
 # ------------------
 
 estimated_cycle = [0]
-optimal_cycle = []
+cycle_optimal = []
 current_cycle = []
 visited_nodes = 0
 random_start_node = 0
@@ -31,28 +31,21 @@ random_start_node = 0
 #  Visuals
 # ---------
 
-def update_cycle_node_list_by_labels_name(a_list):
-    for i in range(1, len(a_list)):
-        a_list[i] += 1
-    return a_list
-
-
 def create_graph(nt):
     return nt.Graph()
 
 
 def color_cycle_edges(graph, to_color):
     nodes = len(to_color)
-    for i in range(nodes - 2):
-        graph[to_color[i+1]][to_color[i+2]]['color'] = 'g'
-    graph[to_color[1]][to_color[nodes-1]]['color'] = 'g'
+    for i in range(nodes):
+        graph[to_color[i-1]][to_color[i]]['color'] = 'g'
 
 
 def draw_graph(g, cycle, nt):
     color_cycle_edges(g, cycle)
     pos = nt.circular_layout(g)
     edges_labels = dict([((u, v,), d['weight']) for u, v, d in g.edges(data=True)])
-    nodes_labels = dict([(i,i+1) for i in range(g.number_of_nodes())])
+    nodes_labels = dict([(i,i) for i in range(g.number_of_nodes())])
     nt.draw_networkx_labels(g, pos, labels=nodes_labels)
     nt.draw_networkx_edge_labels(g, pos, edge_labels=edges_labels, rotate=False, label_pos=0.2)
     nt.draw_networkx(g, pos, with_labels= False)
@@ -84,12 +77,12 @@ def read_graphs(g1, g2):
 def initialize_variables():
     global estimated_cycle
     global current_cycle
-    global optimal_cycle
+    global cycle_optimal
     global visited_nodes
 
     estimated_cycle = [0]
     current_cycle = [0]
-    optimal_cycle = [0]
+    cycle_optimal = [0]
     visited_nodes = 0
 
 
@@ -130,6 +123,7 @@ def coord_to_adj_matrix(coord):
     return dist_mat
 
 
+
 # ------------------------------------------------------------------------------------------
 # -------------------------------------- Bruteforce ----------------------------------------
 # ------------------------------------------------------------------------------------------
@@ -159,10 +153,11 @@ def bruteforce(g, i):
         if g.has_edge(i, k) and (current_cycle.count(k) == 0 or (current_cycle.count(k) == 1 and current_cycle[0] == k)):
             current_cycle[0] = current_cycle[0]+g[i][k]['weight']
             bruteforce(g, k)
-            add_to_min(g, current_cycle, optimal_cycle)
+            add_to_min(g, current_cycle, cycle_optimal)
             current_cycle.pop()
             current_cycle[0] = current_cycle[0] - g[i][k]['weight']
             visited_nodes = visited_nodes - 1
+
 
 
 # ------------------------------------------------------------------------------------------
@@ -174,13 +169,26 @@ def bruteforce(g, i):
 # -------------------
 
 def heuristic_nearest_neighboor(g, i):
+    time_begin = time.process_time_ns()  # Starting timer
+    heuristic_exec = heuristic_nearest_neighboor_recursive(g, i)
+    path = heuristic_exec[0]
+    cost = heuristic_exec[1]
+    time_end = time.process_time_ns()  # Stopping timer
+
+    time_exec = time_end - time_begin
+
+    return path, cost, time_exec
+
+
+def heuristic_nearest_neighboor_recursive(g, i):
     global estimated_cycle
     estimated_cycle.append(i)
     if len(estimated_cycle) == g.number_of_nodes() + 1:
         estimated_cycle[0] = estimated_cycle[0] + g[estimated_cycle[1]][i]['weight']
-        return
+        return estimated_cycle[1:], estimated_cycle[0]
     estimated_cycle[0] = estimated_cycle[0] + min_adj_cost(g, i)[0]
-    heuristic_nearest_neighboor(g, min_adj_cost(g, i)[1])
+    return heuristic_nearest_neighboor_recursive(g, min_adj_cost(g, i)[1])
+
 
 def min_adj_cost(g, node):
     adj_weights = []
@@ -212,16 +220,18 @@ def min_adj_cost(g, node):
 # ------------------
 
 def heuristic_random_selection(g):
-    global estimated_cycle
-    estimated_cycle = []
-    for i in range(g.number_of_nodes()):
-        estimated_cycle.append(i)
-    random.shuffle(estimated_cycle)
-    cost = 0
-    for i in range(g.number_of_nodes()):
-        cost += g[estimated_cycle[i-1]][estimated_cycle[i]]['weight']
-    estimated_cycle.insert(0, cost)    # First position is for the cost)
+    path = []
 
+    time_begin = time.process_time_ns()  # Starting timer
+    for i in range(g.number_of_nodes()):
+        path.append(i)
+    random.shuffle(path)
+    cost = calculate_cost_from_path(g, path)
+    time_end = time.process_time_ns()  # Stopping timer
+
+    time_exec = time_end - time_begin
+
+    return path, cost, time_exec
 
 
 # --------------------------------------------------------------------------------------
@@ -230,15 +240,29 @@ def heuristic_random_selection(g):
 # -------------
 
 def heuristic_random_walk(g, i):
+    time_begin = time.process_time_ns()  # Starting timer
+    heuristic_execution = heuristic_random_walk_recursive(g, i)
+    time_end = time.process_time_ns()  # Stopping timer
+
+    path = heuristic_execution[0]
+    cost = heuristic_execution[1]
+    time_exec = time_end - time_begin
+
+    return path, cost, time_exec
+
+
+def heuristic_random_walk_recursive(g, i):
     global estimated_cycle
     estimated_cycle.append(i)
     last_city = g.number_of_nodes() - 1
+
     if len(estimated_cycle) == g.number_of_nodes() + 1:
         estimated_cycle[0] = estimated_cycle[0] + g[estimated_cycle[1]][i]['weight']
-        return
+        return estimated_cycle[1:], estimated_cycle[0]
+
     next_random_city = random_other_than(estimated_cycle[1:], last_city)
     estimated_cycle[0] = estimated_cycle[0] + g[i][next_random_city]['weight']
-    heuristic_random_walk(g, next_random_city)
+    return heuristic_random_walk_recursive(g, next_random_city)
 
 
 def random_other_than(alist, top):
@@ -255,13 +279,17 @@ def random_other_than(alist, top):
 # --------------
 
 def heuristic_christofides(G):
-    global estimated_cycle
 
     mat = np.array(create_adjacency_matrix(G))
-    path = christofides_tsp.christofides_tsp(mat)
 
-    estimated_cycle.extend(path)
-    estimated_cycle[0] = calculate_cost_from_path(G, path)
+    time_begin = time.process_time_ns()  # Starting timer
+    path = christofides_tsp.christofides_tsp(mat)
+    time_end = time.process_time_ns()  # Stopping timer
+
+    cost = calculate_cost_from_path(G, path)
+    time_exec = time_end - time_begin
+
+    return path, cost, time_exec
 
 
 def to_upper_matrix(matrix):
@@ -548,32 +576,35 @@ time_bruteforce = round(time_end_bruteforce - time_begin_bruteforce, 6)
     # ---------------------
 time_begin_heuristic = time.process_time_ns()  # Starting timer
 
-# heuristic_nearest_neighboor(main_graph_heuristic, random_start_node)
-# heuristic_random_selection(main_graph_heuristic)
-# heuristic_random_walk(main_graph_heuristic, random_start_node)
-heuristic_christofides(main_graph_heuristic)
+# heuristic_execution = heuristic_nearest_neighboor(main_graph_heuristic, random_start_node)
+# heuristic_execution = heuristic_random_selection(main_graph_heuristic)
+# heuristic_execution = heuristic_random_walk(main_graph_heuristic, random_start_node)
+heuristic_execution = heuristic_christofides(main_graph_heuristic)
 
-time_end_heuristic = time.process_time_ns()  # Stopping timer
-time_heuristic = round(time_end_heuristic - time_begin_heuristic, 6)
+
+cycle_heuristic = heuristic_execution[0]
+cost_heuristic = heuristic_execution[1]
+time_heuristic = heuristic_execution[2]
 
 
     # ------------------
     #  Printing results
     # ------------------
-draw_graph(main_graph_bruteforce, optimal_cycle, nx)
-draw_graph(main_graph_heuristic, estimated_cycle, nx2)
+draw_graph(main_graph_bruteforce, cycle_optimal[1:], nx)
+draw_graph(main_graph_heuristic, cycle_heuristic, nx2)
 
-print("\n\nOptimal Cycle : " + str(update_cycle_node_list_by_labels_name(optimal_cycle)[1:]))
-print("Cost : " + str(optimal_cycle[0]))
+print("\n\nOptimal Cycle : " + str(cycle_optimal[1:]))
+print("Cost : " + str(cycle_optimal[0]))
 print("Time : " + str(round(time_bruteforce/10**6, 1)) + " ms = " +
                             str(round(time_bruteforce, 1)) + " ns")
 
-print("\n\nEstimated Cycle : " + str(update_cycle_node_list_by_labels_name(estimated_cycle)[1:]))
-print("Cost : " + str(estimated_cycle[0]))
+
+print("\n\nEstimated Cycle : " + str(cycle_heuristic))
+print("Cost : " + str(cost_heuristic))
 print("Time : " + repr(round(time_heuristic/10**6, 1)) + " ms = " +
                                 str(round(time_heuristic, 1)) + " ns")
 
-print("\n\n - Estimation is " + str(round(estimated_cycle[0]/optimal_cycle[0], 1))
+print("\n\n - Estimation is " + str(round(cost_heuristic / cycle_optimal[0], 1))
       + " further from optimal\n\n")
 
 
