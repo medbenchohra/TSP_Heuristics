@@ -4,12 +4,11 @@ import networkx as nxo
 import matplotlib.pyplot as plt
 import time
 import random
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.spatial import distance
 
+from scipy.spatial import distance
 from pytsp import christofides_tsp
 
 
@@ -23,25 +22,6 @@ optimal_cycle = []
 current_cycle = []
 visited_nodes = 0
 random_start_node = 0
-
-
-# ------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------
-#  From coord to adjacency matrix
-# ------------------
-def coord_to_matrix(coord):
-    num_nodes = coord.shape[0]
-    dist_mat = np.zeros((num_nodes, num_nodes))
-    for _ in range(0, num_nodes):
-        for i in range(_ + 1, num_nodes):
-            a = (coord[_][0], coord[_][1])
-            b = (coord[i][0], coord[i][1])
-            dist_mat[_][i] = int(distance.euclidean(a, b))
-
-    dist_mat += dist_mat.T
-
-    return dist_mat
-
 
 
 
@@ -114,14 +94,14 @@ def initialize_variables():
 
 
 def initialize_graphs(g1, g2):
-    nodes = int(input("\n\n\nNumber of nodes : "))
+    nodes = int(input("\n\nNumber of nodes : "))
     print("")
     for i in range(nodes):
         g1.add_node(i)
         g2.add_node(i)
     for i in range(nodes):
         for k in range(i+1, nodes):
-            weight = random.randint(2, 2000)
+            weight = random.randint(2, 100)
             g1.add_edge(i, k, color='#ECEAE1', weight=weight)
             g2.add_edge(i, k, color='#ECEAE1', weight=weight)
 
@@ -136,11 +116,23 @@ def calculate_cost_from_path(G, path):
     return cost
 
 
+def coord_to_adj_matrix(coord):
+    num_nodes = coord.shape[0]
+    dist_mat = np.zeros((num_nodes, num_nodes))
+    for _ in range(0, num_nodes):
+        for i in range(_ + 1, num_nodes):
+            a = (coord[_][0], coord[_][1])
+            b = (coord[i][0], coord[i][1])
+            dist_mat[_][i] = int(distance.euclidean(a, b))
+
+    dist_mat += dist_mat.T
+
+    return dist_mat
+
+
 # ------------------------------------------------------------------------------------------
+# -------------------------------------- Bruteforce ----------------------------------------
 # ------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------
-#  Bruteforce
-# ------------
 
 def add_to_min(g, current_conf, ideal_conf):
     nbr_nodes = g.number_of_nodes()
@@ -174,12 +166,9 @@ def bruteforce(g, i):
 
 
 # ------------------------------------------------------------------------------------------
+# -------------------------------------- Heuristics ----------------------------------------
 # ------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------
-#  Heuristics
-# ------------
 
-# --------------------------------------------------------------------------------------
 # -------------------
 #  Nearest Neighboor
 # -------------------
@@ -302,10 +291,12 @@ def create_adjacency_matrix(graph):
     return matrix
 
 
-# --------------------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------------------
-# Two-opt
+# ---------
+#  Two-Opt
+# ---------
+
 def cost_change(cost_mat, n1, n2, n3, n4):
     return cost_mat[n1][n3] + cost_mat[n2][n4] - cost_mat[n1][n2] - cost_mat[n3][n4]
 
@@ -331,22 +322,15 @@ def heuristic_two_opt(route, cost_mat):
 
 
 
-
 # ------------------------------------------------------------------------------------------
+# ------------------------------------ Metaheuristics --------------------------------------
 # ------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------
-#  Meta Heuristics
-# ------------
 
-# --------------------------------------------------------------------------------------
-# --------
-#   Genetic Algorithm
-# --------
+# -------------------
+#  Genetic Algorithm
+# -------------------
 
-
-#   class City which represents the coord of a city. The city will represent the gene in our GA
-
-
+# Class City which represents the coord of a city. The city will represent the gene in our GA
 class City:
     def __init__(self, node, x, y):
         self.node = node
@@ -362,11 +346,9 @@ class City:
     def __repr__(self):
         return str(self.node)
 
-#----------------------------------------------------------------------------------------
-
-#   class Fitness tells us how good each route is. In our case the fitness is 1/global_dist
 
 
+# Class Fitness tells us how good each route is. In our case the fitness is 1/global_dist
 class Fitness:
     def __init__(self, route):
         self.route = route
@@ -392,13 +374,13 @@ class Fitness:
             self.fitness = 1 / float(self.routeDistance())
         return self.fitness
 
-#--------------------------------------------------------------------------
 
-#    First step of our GA for TSP. Create a population
 
+# First step of our GA for TSP. Create a population
 def createRoute(cityList):
     route = random.sample(cityList, len(cityList))
     return route
+
 
 
 def initialPopulation(popSize, cityList):
@@ -408,17 +390,17 @@ def initialPopulation(popSize, cityList):
         population.append(createRoute(cityList))
     return population
 
-#--------------------------------------------------------------------------
 
-#    rank routes according to their Fitness
 
+# Rank routes according to their Fitness
 def rankRoutes(population):
     fitnessResults = {}
     for i in range(0,len(population)):
         fitnessResults[i] = Fitness(population[i]).routeFitness()
     return sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True)
 
-#----------------------------------------------------------------------------
+
+
 def selection(popRanked, eliteSize):
     selectionResults = []
     df = pd.DataFrame(np.array(popRanked), columns=["Index", "Fitness"])
@@ -437,11 +419,7 @@ def selection(popRanked, eliteSize):
 
 
 
-
-#---------------------------------------------------------------------------------------
-
 # Create the mating pool : a mating pool is a collection of parents to create the next generation
-
 def matingPool(population, selectionResults):
     matingpool = []
     for i in range(0, len(selectionResults)):
@@ -451,9 +429,6 @@ def matingPool(population, selectionResults):
 
 
 
-#---------------------------------------------------------------------------------------
-
-# Breed
 def breed(parent1, parent2):
     child = []
     childP1 = []
@@ -473,7 +448,6 @@ def breed(parent1, parent2):
     child = childP1 + childP2
     return child
 
-#----------------------------------------------------------------------------------------
 
 def breedPopulation(matingpool, eliteSize):
     children = []
@@ -489,12 +463,11 @@ def breedPopulation(matingpool, eliteSize):
     return children
 
 
-#----------------------------------------------------------------------------------------
-#   Mutate: is a way to introduce variation in our population randomly by swapping two cities in a route
 
+# Mutate: is a way to introduce variation in our population randomly by swapping two cities in a route
 def mutate(individual, mutationRate):
     for swapped in range(len(individual)):
-        if (random.random() < mutationRate):
+        if random.random() < mutationRate :
             swapWith = int(random.random() * len(individual))
 
             city1 = individual[swapped]
@@ -514,9 +487,8 @@ def mutatePopulation(population, mutationRate):
     return mutatedPop
 
 
-#---------------------------------------------------------------------
-#   Prepration of the next generation
 
+# Prepration of the next generation
 def nextGeneration(currentGen, eliteSize, mutationRate):
     popRanked = rankRoutes(currentGen)
     selectionResults = selection(popRanked, eliteSize)
@@ -526,9 +498,8 @@ def nextGeneration(currentGen, eliteSize, mutationRate):
     return nextGeneration
 
 
-#---------------------------------------------------------------------
-#   The main algorithm of GA
 
+# The main algorithm of GA
 def geneticAlgorithm(population, popSize, eliteSize, mutationRate, generations):
     pop = initialPopulation(popSize, population)
     print("Initial distance: " + str(1 / rankRoutes(pop)[0][1]))
@@ -541,15 +512,17 @@ def geneticAlgorithm(population, popSize, eliteSize, mutationRate, generations):
     bestRoute = pop[bestRouteIndex]
     return bestRoute
 
+# ------------------------------------------------------------------------------------------
+# ---------------------
+#  Simulated Annealing
+# ---------------------
 
 
 
-
-# ---------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------
-#  Main Program
-# --------------
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+# ------------------------------------- Main Program ---------------------------------------
+# ------------------------------------------------------------------------------------------
 
 main_graph_bruteforce = create_graph(nx)
 main_graph_heuristic = create_graph(nx2)
@@ -563,7 +536,9 @@ random_start_node = random.randrange(main_graph_bruteforce.number_of_nodes())
     #  Exact execution
     # -----------------
 time_begin_bruteforce = time.process_time_ns()
-# bruteforce(main_graph_bruteforce, 0)
+
+bruteforce(main_graph_bruteforce, random_start_node)
+
 time_end_bruteforce = time.process_time_ns()
 time_bruteforce = round(time_end_bruteforce - time_begin_bruteforce, 6)
 
@@ -575,8 +550,8 @@ time_begin_heuristic = time.process_time_ns()  # Starting timer
 
 # heuristic_nearest_neighboor(main_graph_heuristic, random_start_node)
 # heuristic_random_selection(main_graph_heuristic)
-heuristic_random_walk(main_graph_heuristic, random_start_node)
-# heuristic_christofides(main_graph_heuristic)
+# heuristic_random_walk(main_graph_heuristic, random_start_node)
+heuristic_christofides(main_graph_heuristic)
 
 time_end_heuristic = time.process_time_ns()  # Stopping timer
 time_heuristic = round(time_end_heuristic - time_begin_heuristic, 6)
@@ -585,8 +560,8 @@ time_heuristic = round(time_end_heuristic - time_begin_heuristic, 6)
     # ------------------
     #  Printing results
     # ------------------
-# draw_graph(main_graph_bruteforce, optimal_cycle, nx)
-# draw_graph(main_graph_heuristic, estimated_cycle, nx2)
+draw_graph(main_graph_bruteforce, optimal_cycle, nx)
+draw_graph(main_graph_heuristic, estimated_cycle, nx2)
 
 print("\n\nOptimal Cycle : " + str(update_cycle_node_list_by_labels_name(optimal_cycle)[1:]))
 print("Cost : " + str(optimal_cycle[0]))
@@ -600,7 +575,6 @@ print("Time : " + repr(round(time_heuristic/10**6, 1)) + " ms = " +
 
 print("\n\n - Estimation is " + str(round(estimated_cycle[0]/optimal_cycle[0], 1))
       + " further from optimal\n\n")
-
 
 
 # ---------------------------------------------------------------------------------------
