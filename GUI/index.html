@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./main.css">
+  <script src="./linkers/link.js"></script>
+  <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+  <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
+
+  <title>Travelling Salesman Problem</title>
+</head>
+
+<body>
+
+
+
+
+
+  <div id="particles">
+    <div id="webcoderskull">
+      <h1>Traveling Salesman !</h1>
+      <hr>
+      <div id="container">
+
+        <div id="left">
+          <label for="inputfile" style="font-size: 1rem;">Choisir du Benchmark</label>
+          <label class="btn btn-dark btn-file">
+              Browse <input type="file" id="inputfile" style="display: none;" onchange="getDetails()" >
+          </label>
+          <br><hr>
+          <!-- THIS CARD SHOWS THE DETAILS OF AN INSTANCE -->
+          <div id="details" class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">Details</h5>
+              <ul class="list-group list-group-flush">
+                <li id="execTime" class="list-group-item">Temps d'exécution:</li>
+                <li id="solution" class="list-group-item">Solution: </li>
+                <li id="pathCost" class="list-group-item">Cout: </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div id="middle"></div>
+
+        <div id="right">
+          <form >
+            <h4>Heuristiques spécifiques</h4>
+            <div class="form-row">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio1" value="heur1.py" checked>
+                <label class="form-check-label" for="inlineRadio1">Algo1</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio2" value="option2">
+                <label class="form-check-label" for="inlineRadio2">Algo2</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio3" value="option3">
+                <label class="form-check-label" for="inlineRadio3">Algo3</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio4" value="heur1.py">
+                <label class="form-check-label" for="inlineRadio4">Algo4</label>
+              </div>
+            </div>
+            <div class="form-row">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio5" value="option5">
+                  <label class="form-check-label" for="inlineRadio5">Algo5</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio6" value="option6">
+                  <label class="form-check-label" for="inlineRadio6">Algo6</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio7" value="option7">
+                  <label class="form-check-label" for="inlineRadio7">Algo7</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio8" value="option8">
+                  <label class="form-check-label" for="inlineRadio8">Algo8</label>
+                </div>
+              </div>
+            <hr>
+
+            <h4>Meta Heuristiques</h4>
+            <div class="form-row">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio4" value="simulated-annealing-tsp/test.py">
+                <label class="form-check-label" for="inlineRadio4">Récuit simulé</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio5" value="option10">
+                <label class="form-check-label" for="inlineRadio5">Algo2</label>
+              </div>
+            </div>
+            <hr>
+
+            <h4>Hyper Heuristiques </h4>
+            <div class="form-row">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" name="inlineRadioOptions" type="radio" id="inlineRadio6" value="option11">
+                <label class="form-check-label" for="inlineRadio6">Algo1</label>
+              </div>
+            </div>
+            <hr>
+            <button type="button" onclick="execute()" class="btn btn-dark">Exécuter</button>
+          </form>
+        </div>
+
+      </div>
+
+
+    </div>
+  </div>
+
+
+
+
+  <script> require('./renderer.js') </script>
+</body>
+
+</html>
