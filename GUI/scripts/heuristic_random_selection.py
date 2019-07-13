@@ -34,18 +34,18 @@ def calculate_cost_from_path(G, path):
 
 sys.path.append('scripts/tsplib-parser')
 import TsplibParser
-params=json.loads(sys.argv[1])
+#params=json.loads(sys.argv[1])
 
-instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
+instance = TsplibParser.load_instance("scripts/tsp-dataset/bier127.tsp",None)
 graph = instance.get_nx_graph()
 
 
-""" heuristic_execution = heuristic_random_selection(graph)
+heuristic_execution = heuristic_random_selection(graph)
 heuristic_path = heuristic_execution[0]
 heuristic_cost = heuristic_execution[1]
 heuristic_time = heuristic_execution[2]
 
-print(json.dumps({'execTime': heuristic_time, 'pathCost': heuristic_cost}, separators=(',', ': '))) """
-print(json.dumps({'execTime': 55, 'pathCost': 44,'solution':"4,3,2,1"}, separators=(',', ': '))) 
+print(json.dumps({'execTime': heuristic_time, 'pathCost': heuristic_cost}, separators=(',', ': ')))
+#print(json.dumps({'execTime': 55, 'pathCost': 44,'solution':"4,3,2,1"}, separators=(',', ': '))) 
 sys.stdout.flush()
 
