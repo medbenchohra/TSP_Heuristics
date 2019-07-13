@@ -34,6 +34,7 @@ def calculate_cost_from_path(adj_mat, path):
 
     return cost
 
+
 def coord_to_adj_matrix(coord):
     num_nodes = len(coord)
     dist_mat = np.zeros((num_nodes, num_nodes))
@@ -47,15 +48,15 @@ def coord_to_adj_matrix(coord):
 
     return dist_mat
 
+
 # --------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------
 
 sys.path.append('scripts/tsplib-parser')
 import TsplibParser
-# params=json.loads(sys.argv[1])
-
-# instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
-instance = TsplibParser.load_instance("scripts/tsp-dataset/a280.tsp",None)
+params=json.loads(sys.argv[1])
+#
+instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
 
 coords = instance.get_nodes_coord()
 adj_mat = coord_to_adj_matrix(coords)
@@ -66,6 +67,5 @@ heuristic_cost = heuristic_execution[1]
 heuristic_time = heuristic_execution[2]
 
 print(json.dumps({'execTime': heuristic_time, 'pathCost': heuristic_cost}, separators=(',', ': ')))
-# print(json.dumps({'execTime': 55, 'pathCost': 44,'solution':"4,3,2,1"}, separators=(',', ': ')))
 sys.stdout.flush()
 
