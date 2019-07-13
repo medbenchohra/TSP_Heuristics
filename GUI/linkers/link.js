@@ -76,6 +76,44 @@ async function getParams(methodeName){
                 })
                 return formValue;
         }
+        case 'GA-tsp/ga_call.py':{
+            const {value:formValue}= await Swal.fire({
+                    title: 'Parametres de l\'algo génétique',
+                    html:
+                      '<input id="swal-input1" class="swal2-input" placeholder="popSize" type="number">' +
+                      '<input id="swal-input2" class="swal2-input" placeholder="eliteSize" type="number">'+
+                      '<input id="swal-input3" class="swal2-input" placeholder="mutationRate" type="number">' +
+                      '<input id="swal-input4" class="swal2-input" placeholder="generations" type="number">',
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        popSize=document.getElementById('swal-input1').value;
+                        eliteSize=document.getElementById('swal-input2').value;
+                        mutationRate=document.getElementById('swal-input3').value;
+                        generations=document.getElementById('swal-input4').value;
+
+                        if(!popSize){
+                            popSize = 100;
+                        }
+                        if(!eliteSize){
+                            eliteSize=30;
+                        }
+                        if(!mutationRate){
+                            mutationRate=0.01;
+                        }
+                        if(!generations){
+                            generations=500;
+                        }
+                        var par={
+                            "popSize":popSize,
+                            "eliteSize": eliteSize,
+                            "mutationRate":mutationRate,
+                            "generations":generations
+                          }
+                        return par
+                    }
+                })
+                return formValue;
+        }
         default:{
             var v={}
             return v;
