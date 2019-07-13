@@ -7,10 +7,11 @@ import random
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from operator import itemgetter
 
 from scipy.spatial import distance
 from pytsp import christofides_tsp
-
+import collections
 
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
@@ -425,7 +426,7 @@ def rankRoutes(population):
     fitnessResults = {}
     for i in range(0,len(population)):
         fitnessResults[i] = Fitness(population[i]).routeFitness()
-    return sorted(fitnessResults.items(), key = operator.itemgetter(1), reverse = True)
+    return sorted(fitnessResults.items(), key = itemgetter(1), reverse = True)
 
 
 

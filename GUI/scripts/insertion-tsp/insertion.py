@@ -2,12 +2,14 @@ import json
 import time
 import collections
 
+
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------
 # Insertion
 # ----------
 
-def heuristic_insertion(M):
+def heuristic_insertion(N):
+    M = N.tolist()
     time_begin = time.process_time()
     visited = []
     path = []
@@ -70,5 +72,6 @@ def heuristic_insertion(M):
     s = 0
     for v in path:
         s = s + M[v[0]][v[1]]
-    print(json.dumps({'execTime': exec_time, 'pathCost': s, 'solution': ""}, separators=(',', ': ')))
-    return path, s, exec_time
+
+    print(json.dumps({'execTime': exec_time, 'pathCost': s, 'solution': "To large !!"}, separators=(',', ': ')))
+    return exec_time, s
