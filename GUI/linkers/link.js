@@ -39,7 +39,7 @@ function execute(){
             runMethode(methodeName,JSON.stringify(v)).then((val)=>{
                 var obj=JSON.parse(val);
                 $("#execTime").text("Temps d'exécution: "+obj.execTime);
-                $("#solution").text("Solution: "+obj.solution);
+                $("#solution").text("Solution: Too Long!");
                 $("#pathCost").text("Cout: "+obj.pathCost);
             }) 
           }) 
