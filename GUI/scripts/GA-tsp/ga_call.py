@@ -14,7 +14,6 @@ instance=TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],No
 
 coords = instance.get_nodes_coord()
 
-adj_matrix = instance.get_adj_matrix().tolist()
 
 cityList = []
 

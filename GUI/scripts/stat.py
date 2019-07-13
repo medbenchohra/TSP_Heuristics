@@ -4,6 +4,7 @@ sys.path.append('./greedy-tsp')
 sys.path.append('scripts/tsplib-parser')
 from greedy import heuristic_greedy
 import TsplibParser
+import time
 
 instance_dir = "./stp-lib-copy/"
 
@@ -33,20 +34,28 @@ for instance_file in os.listdir(instance_dir):
 with open('insertion.csv', 'w') as f:
     for item in result:
         f.write("%s\n" % item)
-
 #=============================================================
 
-sys.path.append('./insertion-tsp')
-from insertion import heuristic_insertion
+sys.path.append('./GA-tsp')
+from ga import geneticAlgorithm
 
-result = ['Insertion ;exec   ;cout   ;',]
+
+result = ['GA1 ;exec   ;cout   ;',]
 for instance_file in os.listdir(instance_dir):
     instance = TsplibParser.load_instance(instance_dir + instance_file, None)
-    M = instance.get_adj_matrix()
-    exec, cout = heuristic_insertion(M)
-    result.append(instance_file+'   ;'+str(exec)+'   ;'+str(cout)+'   ;')
+    coords = instance.get_nodes_coord()
 
-with open('insertion.csv', 'w') as f:
+    cityList = []
+
+    for i in range(0, len(coords)):
+        coord = coords[i]
+        cityList.append(ga.City(node=i, x=coord[1], y=coord[2]))
+    t1 = time.time()
+    cout = geneticAlgorithm(cityList, popSize=100,eliteSize = 30, mutationRate=0.01, generations =500)
+    t2 = time.time()
+    result.append(instance_file+'   ;'+str(t2-t1)+'   ;'+str(cout)+'   ;')
+
+with open('ag1.csv', 'w') as f:
     for item in result:
         f.write("%s\n" % item)
 
