@@ -63,6 +63,6 @@ def heuristic_greedy(G):
     for v in result:
         cost += edge_weight(v)
     print(
-        json.dumps({'execTime': exec_time, 'pathCost': cost, 'solution': ""}, separators=(',', ': ')))
+        json.dumps({'execTime': exec_time, 'pathCost': cost, 'solution': "To large !! "}, separators=(',', ': ')))
     return result, cost, exec_time
 

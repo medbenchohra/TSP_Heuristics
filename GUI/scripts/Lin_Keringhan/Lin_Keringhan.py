@@ -2,7 +2,7 @@ import Lin_Keringhan_bakend as lkb
 import random
 #import TsplibParser
 def Lin_Keringhan(cord,depth=3):
-    neighbors= 10
+    neighbors= 3
     verbose=False
     cities = []
     #instance=TsplibParser.load_instance(pbFileName,solFileName)
