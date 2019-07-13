@@ -10,7 +10,7 @@ class Instance:
         self.problem = problem
         self.solution = solution
         self.nx_graph = problem.get_graph()
-        self.adj_matrix = networkx.adjacency_matrix(problem.get_graph()).todense()
+        self.adj_matrix = networkx.adjacency_matrix(problem.get_graph())
     def get_nx_graph(self):
         return self.nx_graph
     def get_adj_matrix(self):
