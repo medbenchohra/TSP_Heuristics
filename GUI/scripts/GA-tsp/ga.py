@@ -194,3 +194,4 @@ def geneticAlgorithm(population, popSize=100, eliteSize=30, mutationRate=0.01, g
     bestRouteIndex = rankRoutes(pop)[0][0]
     bestRoute = pop[bestRouteIndex]
     return cost
+

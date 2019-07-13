@@ -14,7 +14,7 @@ estimated_cycle = [0]
 
 def heuristic_nearest_neighboor(adj_mat, i):
     time_begin = time.process_time_ns()  # Starting timer
-    heuristic_exec = heuristic_nearest_neighboor_recursive(g, i)
+    heuristic_exec = heuristic_nearest_neighboor_recursive(adj_mat, i)
     path = heuristic_exec[0]
     cost = heuristic_exec[1]
     time_end = time.process_time_ns()  # Stopping timer
@@ -78,8 +78,10 @@ def coord_to_adj_matrix(coord):
 params=json.loads(sys.argv[1])
 instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
 
-coords = instance.get_nodes_coord()
-adj_mat = coord_to_adj_matrix(coords)
+# coords = instance.get_nodes_coord()
+# adj_mat = coord_to_adj_matrix(coords)
+
+adj_mat = instance.get_adj_matrix().tolist()
 
 random_start_node = random.randrange(len(adj_mat))
 
