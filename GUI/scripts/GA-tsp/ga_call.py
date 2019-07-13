@@ -27,7 +27,7 @@ for i in range(0,len(coords)):
 if __name__ == "__main__":
     
     t1=time.time()
-    cost=ga.geneticAlgorithm(cityList, popSize=int(params["popSize"]),eliteSize = int(params["eliteSize"]), mutationRate=int(params["mutationRate"]), generations = int(params["generations"]))
+    cost=ga.geneticAlgorithm(cityList, popSize=int(params["popSize"]),eliteSize = int(params["eliteSize"]), mutationRate=float(params["mutationRate"]), generations = int(params["generations"]))
 
     t2=time.time()
     print(json.dumps({'execTime': t2-t1, 'pathCost': cost, 'solution':"TooLongToShow"}, separators=(',', ': ')))
