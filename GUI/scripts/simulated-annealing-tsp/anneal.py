@@ -129,3 +129,5 @@ class SimAnneal(object):
         plt.ylabel("Fitness")
         plt.xlabel("Iteration")
         plt.show()
+
+
