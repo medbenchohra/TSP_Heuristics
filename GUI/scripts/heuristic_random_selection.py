@@ -55,7 +55,7 @@ def coord_to_adj_matrix(coord):
 sys.path.append('scripts/tsplib-parser')
 import TsplibParser
 params=json.loads(sys.argv[1])
-#
+
 instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
 
 coords = instance.get_nodes_coord()
