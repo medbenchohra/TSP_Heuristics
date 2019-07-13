@@ -9,14 +9,14 @@ import json
 from scipy.spatial import distance
 
 
-def heuristic_random_selection(g):
+def heuristic_random_selection(adj_mat):
     path = []
 
     time_begin = time.time()  # Starting timer
-    for i in range(len(g)):
+    for i in range(len(adj_mat)):
         path.append(i)
     random.shuffle(path)
-    cost = calculate_cost_from_path(g, path)
+    cost = calculate_cost_from_path(adj_mat, path)
     time_end = time.time()  # Stopping timer
 
     time_exec = time_end - time_begin
@@ -56,10 +56,12 @@ sys.path.append('scripts/tsplib-parser')
 import TsplibParser
 params=json.loads(sys.argv[1])
 
-instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
+instance = TsplibParser.load_instance("scripts/tsp-dataset/" + params["fileName"],None)
 
-coords = instance.get_nodes_coord()
-adj_mat = coord_to_adj_matrix(coords)
+# coords = instance.get_nodes_coord()
+# adj_mat = coord_to_adj_matrix(coords)
+
+adj_mat = instance.get_adj_matrix().tolist()
 
 heuristic_execution = heuristic_random_selection(adj_mat)
 heuristic_path = heuristic_execution[0]

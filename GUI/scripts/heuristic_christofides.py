@@ -21,17 +21,6 @@ def heuristic_christofides(mat):
     return path, cost, time_exec
 
 
-def to_upper_matrix(matrix):
-    m = matrix
-    n = len(m)
-
-    for i in range(n):
-        for j in range(i):
-            m[i][j] = 0
-
-    return m
-
-
 
 def calculate_cost_from_path(adj_mat, path):
     # Path is noncyclic
@@ -69,6 +58,8 @@ instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],
 
 coords = instance.get_nodes_coord()
 adj_mat = coord_to_adj_matrix(coords)
+
+# adj_mat = instance.get_adj_matrix()
 
 
 heuristic_execution = heuristic_christofides(adj_mat)
