@@ -2,18 +2,18 @@ import time
 import random
 import sys
 import json
-import TsplibParser
+
 
 
 def heuristic_random_selection(g):
     path = []
 
-    time_begin = time.process_time_ns()  # Starting timer
+    time_begin = time.time()  # Starting timer
     for i in range(g.number_of_nodes()):
         path.append(i)
     random.shuffle(path)
     cost = calculate_cost_from_path(g, path)
-    time_end = time.process_time_ns()  # Stopping timer
+    time_end = time.time()  # Stopping timer
 
     time_exec = time_end - time_begin
 
@@ -33,17 +33,19 @@ def calculate_cost_from_path(G, path):
 # --------------------------------------------------------------------------------------------------------
 
 sys.path.append('scripts/tsplib-parser')
+import TsplibParser
 params=json.loads(sys.argv[1])
 
 instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
 graph = instance.get_nx_graph()
 
 
-heuristic_execution = heuristic_random_selection(graph)
+""" heuristic_execution = heuristic_random_selection(graph)
 heuristic_path = heuristic_execution[0]
 heuristic_cost = heuristic_execution[1]
 heuristic_time = heuristic_execution[2]
 
-print(json.dumps({'execTime': heuristic_time, 'pathCost': heuristic_cost}, separators=(',', ': ')))
+print(json.dumps({'execTime': heuristic_time, 'pathCost': heuristic_cost}, separators=(',', ': '))) """
+print(json.dumps({'execTime': 55, 'pathCost': 44,'solution':"4,3,2,1"}, separators=(',', ': '))) 
 sys.stdout.flush()
 

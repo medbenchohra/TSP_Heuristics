@@ -76,6 +76,10 @@ async function getParams(methodeName){
                 })
                 return formValue;
         }
+        default:{
+            var v={}
+            return v;
+        }
     }   
 }
 
