@@ -42,7 +42,3 @@ if __name__ == "__main__":
     t2=time.time()
     print(json.dumps({'execTime': t2-t1, 'pathCost': cost, 'solution':"TooLongToShow"}, separators=(',', ': ')))
     sys.stdout.flush()
-
-
-
-    
