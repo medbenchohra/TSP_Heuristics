@@ -4,6 +4,7 @@ sys.path.append('scripts/tsplib-parser')
 import TsplibParser
 import numpy as np
 import json
+import random
 from scipy.spatial import distance
 
 
@@ -80,7 +81,9 @@ instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],
 coords = instance.get_nodes_coord()
 adj_mat = coord_to_adj_matrix(coords)
 
-heuristic_execution = heuristic_nearest_neighboor(adj_mat)
+random_start_node = random.randrange(len(adj_mat))
+
+heuristic_execution = heuristic_nearest_neighboor(adj_mat, random_start_node)
 heuristic_path = heuristic_execution[0]
 heuristic_cost = heuristic_execution[1]
 heuristic_time = heuristic_execution[2]
