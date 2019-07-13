@@ -13,6 +13,7 @@ coords=[]
 instance=TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
 adj_matrix = instance.get_adj_matrix()
 init_route = list(range(adj_matrix.shape[0]))
+init_route.append(0)
 
 def cost_change(cost_mat, n1, n2, n3, n4):
     return cost_mat[n1][n3] + cost_mat[n2][n4] - cost_mat[n1][n2] - cost_mat[n3][n4]
