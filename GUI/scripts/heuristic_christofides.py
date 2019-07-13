@@ -11,7 +11,6 @@ from scipy.spatial import distance
 
 
 def heuristic_christofides(mat):
-
     time_begin = time.process_time_ns()  # Starting timer
     path = christofides_tsp.christofides_tsp(mat)
     time_end = time.process_time_ns()  # Stopping timer
