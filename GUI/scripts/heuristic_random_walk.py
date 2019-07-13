@@ -70,8 +70,10 @@ def coord_to_adj_matrix(coord):
 params=json.loads(sys.argv[1])
 instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
 
-coords = instance.get_nodes_coord()
-adj_mat = coord_to_adj_matrix(coords)
+# coords = instance.get_nodes_coord()
+# adj_mat = coord_to_adj_matrix(coords)
+
+adj_mat = instance.get_adj_matrix().tolist()
 
 random_start_node = random.randrange(len(adj_mat))
 
