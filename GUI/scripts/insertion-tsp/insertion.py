@@ -9,7 +9,8 @@ import collections
 # ----------
 
 def heuristic_insertion(N):
-    M = N.tolist()
+
+    M = N.todense().tolist()
     time_begin = time.process_time()
     visited = []
     path = []

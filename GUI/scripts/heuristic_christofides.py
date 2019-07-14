@@ -10,7 +10,7 @@ from scipy.spatial import distance
 
 
 
-def heuristic_christofides(mat):
+def heuristic_christofides_func(mat):
     time_begin = time.process_time_ns()  # Starting timer
     path = christofides_tsp.christofides_tsp(mat)
     time_end = time.process_time_ns()  # Stopping timer
@@ -53,20 +53,20 @@ def coord_to_adj_matrix(coord):
 # --------------------------------------------------------------------------------------------------------
 
 
-params=json.loads(sys.argv[1])
-instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
-
-coords = instance.get_nodes_coord()
-adj_mat = coord_to_adj_matrix(coords)
-
-# adj_mat = instance.get_adj_matrix()
-
-
-heuristic_execution = heuristic_christofides(adj_mat)
-heuristic_path = heuristic_execution[0]
-heuristic_cost = heuristic_execution[1]
-heuristic_time = heuristic_execution[2]
-
-print(json.dumps({'execTime': heuristic_time, 'pathCost': heuristic_cost}, separators=(',', ': ')))
-sys.stdout.flush()
+# params=json.loads(sys.argv[1])
+# instance = TsplibParser.load_instance("scripts/tsp-dataset/"+params["fileName"],None)
+#
+# coords = instance.get_nodes_coord()
+# adj_mat = coord_to_adj_matrix(coords)
+#
+# # adj_mat = instance.get_adj_matrix()
+#
+#
+# heuristic_execution = heuristic_christofides(adj_mat)
+# heuristic_path = heuristic_execution[0]
+# heuristic_cost = heuristic_execution[1]
+# heuristic_time = heuristic_execution[2]
+#
+# print(json.dumps({'execTime': heuristic_time, 'pathCost': heuristic_cost}, separators=(',', ': ')))
+# sys.stdout.flush()
 
