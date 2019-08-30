@@ -1,5 +1,6 @@
 # TSP_Heuristics
-Implementing a group of heuristics and metaheuristics to the famous Travelling Salesman Problem (TSP).
+Implementing a group of heuristics and metaheuristics to the famous Travelling Salesman Problem (TSP) using Python with Electron to manage the UI.
+
 
 # Heuristics :
   * Nearest Neighbor 
@@ -12,7 +13,9 @@ Implementing a group of heuristics and metaheuristics to the famous Travelling S
   * Greedy Algorithm
   
   
+  
 # Metaheuristics :
   * Simulated Annealing 
   * Genetic Algorithm
   
+
