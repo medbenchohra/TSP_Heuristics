@@ -1,7 +1,7 @@
 # TSP_Heuristics
 Implementing a group of heuristics and metaheuristics to the famous Travelling Salesman Problem (TSP).
 
-#Heuristics :
+# Heuristics :
   * Nearest Neighbor 
   * Random Selection
   * Random Walk
@@ -12,7 +12,7 @@ Implementing a group of heuristics and metaheuristics to the famous Travelling S
   * Greedy Algorithm
   
   
-#Metaheuristics :
+# Metaheuristics :
   * Simulated Annealing 
   * Genetic Algorithm
   
